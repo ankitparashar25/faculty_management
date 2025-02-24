@@ -1,0 +1,40 @@
+{% extends 'faculty/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Verify Faculty Profiles</h2>
+    <div class="card mt-4">
+        <div class="card-body">
+            {% if unverified_profiles %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            {% for profile in unverified_profiles %}
+            <tr>
+                <td>{{ profile.user.username }}</td>
+                <td>{{ profile.created_at }}</td>
+                <td>
+                    <form method="POST" action="{% url 'verify_profiles' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="profile_id" value="{{ profile.id }}">
+                        <button type="submit" class="btn btn-success">Verify</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+
+                    </tbody>
+                </table>
+            {% else %}
+                <p>All profiles are verified.</p>
+            {% endif %}
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

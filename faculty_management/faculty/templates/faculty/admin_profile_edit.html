@@ -1,0 +1,45 @@
+{% extends 'faculty/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Edit Faculty Profile - {{ form.instance.user.username }}</h2>
+            <form method="POST" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="employee_id">Employee ID:</label>
+                    <input type="text" name="employee_id" class="form-control" 
+                           value="{{ profile.employee_id|default_if_none:'' }}">
+                </div>
+                <div class="mb-3">
+                    {{ form.photo.label_tag }}
+                    <div class="d-flex justify-content-center align-items-center" style="width: 20%; height: 20x;  overflow: hidden; background: #f0f0f0;">
+                        {% if form.instance.photo %}
+                            <img src="{{ form.instance.photo.url }}" class="img-fluid" style="width: 100%; height: 100%; object-fit: cover;" alt="Current Profile Photo">
+                        {% else %}
+                            <i class="fas fa-user-circle fa-3x text-secondary"></i>
+                        {% endif %}
+                    </div>
+                    {{ form.photo }}
+                    <small class="form-text text-muted">Upload a square image for best results</small>
+                </div>
+
+
+                <div class="mb-3">
+                    {{ form.documents.label_tag }}
+                    {{ form.documents }}
+                    <small class="form-text text-muted">Upload supporting documents (PDF, DOC, etc.)</small>
+                </div>
+                <div class="mb-3">
+                    {{ form.department.label_tag }}
+                    {{ form.department }}
+                </div>
+                <div class="mb-3">
+                    {{ form.phone_number.label_tag }}
+                    {{ form.phone_number }}
+                </div>
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+
+            </form>
+
+</div>
+{% endblock %}

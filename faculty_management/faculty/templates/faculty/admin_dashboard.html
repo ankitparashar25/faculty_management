@@ -1,0 +1,199 @@
+{% extends 'faculty/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Admin Dashboard</h2>
+    
+    <!-- Schedule Management Section -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Schedule Management</h3>
+        </div>
+        <div class="card-body">
+            <form method="GET" class="mb-3">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="faculty">Schedule_view:</label>
+                            <select name="faculty" id="faculty" class="form-control" onchange="this.form.submit()">
+                                <option value="">-- Select Faculty --</option>
+                                {% for profile in faculty_profiles %}
+                                    <option value="{{ profile.user.id }}" {% if selected_faculty and selected_faculty.id == profile.user.id %}selected{% endif %}>
+                                        {{ profile.user.get_full_name|default:profile.user.username }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </form>
+            
+            <a href="{% url 'add_schedule' %}" class="btn btn-primary mb-3">
+                Add Schedule
+            </a>
+
+            {% if selected_faculty %}
+                <h4>Schedules for {{ selected_faculty.get_full_name|default:selected_faculty.username }}</h4>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Title</th>
+                                <th>Date</th>
+
+                                <th>Start Time</th>
+                                <th>End Time</th>
+                                <th>Duration</th>
+                                <th>Confirmation Status</th>
+                                <th>Actions</th>
+
+
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for schedule in schedules %}
+                                <tr>
+                                    <td>{{ schedule.title }}</td>
+                                    <td>{{ schedule.date }}</td>
+
+
+                                    <td>{{ schedule.start_time }}</td>
+                                    <td>{{ schedule.end_time }}</td>
+                                    <td>{{ schedule.duration_display }}</td>
+                                    <td>
+                                        {% if schedule.is_confirmed %}
+                                            <span class="text-success">Confirmed</span>
+                                            <br>
+                                            <small>{{ schedule.confirmed_at|date:"M d, Y H:i" }}</small>
+                                        {% else %}
+                                            <span class="text-warning">Pending</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+
+                                        <a href="{% url 'edit_schedule' schedule.id %}" class="btn btn-warning btn-sm">Edit</a>
+                                        <form method="POST" action="{% url 'delete_schedule' schedule.id %}" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm" 
+                                                    onclick="return confirm('Are you sure you want to delete this schedule?')">
+                                                Delete
+                                            </button>
+                                        </form>
+
+                                    </td>
+                                </tr>
+
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">No schedules found for this faculty</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+
+    <!-- Add Faculty Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="POST" action="{% url 'add_faculty' %}">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ add_faculty_form.username.label_tag }}
+                            {{ add_faculty_form.username }}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            {{ add_faculty_form.password.label_tag }}
+                            {{ add_faculty_form.password }}
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Add Faculty</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Faculty List Section -->
+    <div class="card">
+        <div class="card-header">
+            <h5>Faculty Profiles</h5>
+        </div>
+        <div class="card-body">
+            {% if faculty_profiles %}
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for profile in faculty_profiles %}
+                        <tr>
+                            <td>{{ profile.user.username }}</td>
+                            <td>
+                                {% if profile.is_verified %}
+                                    <span class="badge bg-success">Verified</span>
+                                {% else %}
+                                    <span class="badge bg-warning">Pending</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'admin_view_profile' profile.user.id %}" class="btn btn-info btn-sm">View</a>
+                                <a href="{% url 'admin_edit_profile' profile.user.id %}" class="btn btn-warning btn-sm">Edit</a>
+                                {% if not profile.is_verified %}
+                                    <a href="{% url 'verify_profiles' %}?profile_id={{ profile.id }}" class="btn btn-success btn-sm">Verify</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <p>No faculty profiles found.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if pending_requests %}
+    <div class="mt-5">
+        <h3>Pending Reschedule Requests</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Schedule</th>
+                        <th>Requested By</th>
+                        <th>New Dates</th>
+                        <th>New Times</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request in pending_requests %}
+                    <tr>
+                        <td>{{ request.schedule.title }}</td>
+                        <td>{{ request.requested_by.username }}</td>
+                        <td>{{ request.new_start_date }} to {{ request.new_end_date }}</td>
+                        <td>{{ request.new_start_time }} to {{ request.new_end_time }}</td>
+                        <td>
+                            <a href="{% url 'manage_reschedule' request.id %}" class="btn btn-primary btn-sm">Review</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends 'faculty/base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="card">
+        <div class="card-header">
+            <h2>Faculty Profile - {{ profile.user.username }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="d-flex justify-content-center align-items-center" 
+                         style="width: 220px; height: 280px; overflow: hidden; background: #f0f0f0;">
+                        {% if profile.photo %}
+                            <img src="{{ profile.photo.url }}" class="img-fluid" 
+                                 style="width: 100%; height: 100%; object-fit: cover;" alt="Profile Photo">
+                        {% else %}
+                            <i class="fas fa-user-circle fa-3x text-secondary"></i>
+                        {% endif %}
+                    </div>
+                    {% if not profile.photo %}
+                        <p class="text-muted mt-2 text-center">No photo available</p>
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <h5 class="card-title">Username: {{ profile.user.username }}</h5>
+                    <p class="card-text">Employee ID: {{ profile.employee_id }}</p>
+                    <p class="card-text">Status: 
+                        {% if profile.is_verified %}
+                            <span class="badge bg-success">Verified</span>
+                        {% else %}
+                            <span class="badge bg-warning">Pending Verification</span>
+                        {% endif %}
+                    </p>
+                    <p class="card-text">Department: {{ profile.department|default:"Not specified" }}</p>
+                    <p class="card-text">Phone Number: {{ profile.phone_number|default:"Not specified" }}</p>
+                    {% if profile.documents %}
+                        <p class="card-text">Documents: 
+                            <a href="{{ profile.documents.url }}" target="_blank" class="btn btn-sm btn-outline-primary">
+                                View Document
+                            </a>
+                        </p>
+                    {% else %}
+                        <p class="card-text">Documents: No documents uploaded</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

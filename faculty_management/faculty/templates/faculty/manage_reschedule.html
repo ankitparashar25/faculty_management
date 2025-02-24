@@ -1,0 +1,24 @@
+{% extends 'faculty/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Manage Reschedule Request</h2>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Request Details</h5>
+            <p><strong>Schedule:</strong> {{ request.schedule.title }}</p>
+            <p><strong>Requested By:</strong> {{ request.requested_by.username }}</p>
+            <p><strong>New Dates:</strong> {{ request.new_start_date }} to {{ request.new_end_date }}</p>
+            <p><strong>New Times:</strong> {{ request.new_start_time }} to {{ request.new_end_time }}</p>
+            <p><strong>Reason:</strong> {{ request.reason }}</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" name="action" value="approve" class="btn btn-success">Approve</button>
+                <button type="submit" name="action" value="reject" class="btn btn-danger">Reject</button>
+                <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Back to Dashboard</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

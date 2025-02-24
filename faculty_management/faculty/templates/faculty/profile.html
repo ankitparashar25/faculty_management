@@ -1,0 +1,96 @@
+{% extends 'faculty/base.html' %}
+
+{% block content %}
+<div class="container">
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    <h2>Update Your Profile</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="mb-3">
+            {{ form.first_name.label_tag }}
+            {{ form.first_name }}
+        </div>
+        <div class="mb-3">
+            {{ form.last_name.label_tag }}
+            {{ form.last_name }}
+        </div>
+        <div class="mb-3">
+            {{ form.photo.label_tag }}
+            {{ form.photo }}
+        </div>
+        <div class="mb-3">
+            {{ form.department.label_tag }}
+            {{ form.department }}
+        </div>
+        <div class="mb-3">
+            {{ form.phone_number.label_tag }}
+            {{ form.phone_number }}
+        </div>
+        <div class="mb-3">
+            {{ form.documents.label_tag }}
+            {{ form.documents }}
+        </div>
+        <button type="submit" class="btn btn-primary">Update Profile</button>
+    </form>
+
+    <!-- Schedule History Section -->
+    <div class="mt-5">
+        <h3>Schedule History</h3>
+        
+    <!-- Schedule History -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4>Schedule History</h4>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Date</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Duration</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for schedule in in_progress_schedules %}
+                        <tr class="table-warning">
+                            <td>{{ schedule.title }}</td>
+                            <td>{{ schedule.date }}</td>
+                            <td>{{ schedule.start_time }}</td>
+                            <td>{{ schedule.end_time }}</td>
+                            <td>{{ schedule.duration_display }}</td>
+                            <td>In Progress</td>
+                        </tr>
+                        {% endfor %}
+                        {% for schedule in completed_schedules %}
+                        <tr class="table-success">
+                            <td>{{ schedule.title }}</td>
+                            <td>{{ schedule.date }}</td>
+                            <td>{{ schedule.start_time }}</td>
+                            <td>{{ schedule.end_time }}</td>
+                            <td>{{ schedule.duration_display }}</td>
+                            <td>Completed</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+
+        <a href="{% url 'schedule' %}" class="btn btn-primary">View Full Schedule</a>
+    </div>
+</div>
+{% endblock %}

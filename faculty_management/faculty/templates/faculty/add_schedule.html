@@ -1,0 +1,23 @@
+{% extends 'faculty/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Manage Schedules</h2>
+    
+    <!-- Add Schedule Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Add New Schedule</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-primary">Add Schedule</button>
+            </form>
+        </div>
+    </div>
+
+
+</div>
+{% endblock %}

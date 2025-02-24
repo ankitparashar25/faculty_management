@@ -1,0 +1,54 @@
+{% extends 'faculty/base.html' %}
+
+{% block content %}
+<div class="container">
+    <h2>Schedule for {{ selected_faculty.first_name }} {{ selected_faculty.last_name }}</h2>
+    
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Duration</th>
+                    <th>Confirmation</th>
+                    <th>Reschedule</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for schedule in schedules %}
+            <tr>
+                <td>{{ schedule.title }}</td>
+                <td>{{ schedule.date }}</td>
+                <td>{{ schedule.start_time }}</td>
+                <td>{{ schedule.end_time }}</td>
+                <td>{{ schedule.duration_display }}</td>
+                <td>
+                    {% if schedule.is_confirmed %}
+                        <span class="text-success">Confirmed</span>
+                    {% else %}
+                        <form method="POST" action="{% url 'schedule' %}" style="display:inline;">
+                            {% csrf_token %}
+                            <input type="hidden" name="schedule_id" value="{{ schedule.id }}">
+                            <button type="submit" name="confirm_schedule" class="btn-sm btn-primary">
+                                Confirm
+                            </button>
+                        </form>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if schedule.is_confirmed %}
+                        <button class="btn btn-warning btn-sm" disabled>Request Reschedule</button>
+                    {% else %}
+                        <a href="{% url 'request_reschedule' schedule.id %}" class="btn btn-warning btn-sm">Request Reschedule</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
