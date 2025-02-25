@@ -1,1 +1,1 @@
-# faculty_manangement
+# faculty_management
